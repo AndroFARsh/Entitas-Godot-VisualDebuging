@@ -1,5 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
+/src/*/.godot/
+/src/*/override.cfg
+/src/*-gen/
+
 
 # Godot-specific ignores
 .import/
@@ -13,3 +17,10 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Idea-specific ignores
+/src/*/.vs/
+/src/*/.idea
+.idea/
+/src/*/.idea/
+/tools/*/*/.idea/
