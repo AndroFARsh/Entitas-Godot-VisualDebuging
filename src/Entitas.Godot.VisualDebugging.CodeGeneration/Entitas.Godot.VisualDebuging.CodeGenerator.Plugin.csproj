@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <IsPackable>true</IsPackable>
+        <Nullable>enable</Nullable>
+        <LangVersion>8</LangVersion>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+
+        <PackageId>Entitas.Godot.VisualDebuging.CodeGenerator.Plugin</PackageId>
+
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+        
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+        <Version>0.1.0</Version>
+
+        <Authors>Anton Kukhlevskyi</Authors>
+
+        <Description>Library that generate helper classes for visual debuging</Description>
+
+        <PackageIcon>icon.png</PackageIcon>
+
+        <RootNamespace>Entitas.Godot</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DesperateDevs.Serialization" Version="2.0.2" />
+        <PackageReference Include="Entitas" Version="1.14.2" />
+        <PackageReference Include="Entitas.CodeGeneration.Plugins" Version="1.14.2" />
+        <PackageReference Include="Jenny" Version="1.0.3" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="icon.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
+    
+</Project>

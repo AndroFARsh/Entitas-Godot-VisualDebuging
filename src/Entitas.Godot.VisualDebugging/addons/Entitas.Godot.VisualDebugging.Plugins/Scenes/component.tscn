@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctu8qy48qlf2s"]
+
+[ext_resource type="Script" path="res://addons/Entitas.Godot.VisualDebugging.Plugins/Visual/ComponentDrawer.cs" id="1_glq8h"]
+[ext_resource type="Texture2D" uid="uid://bukt8fvhxc0v3" path="res://addons/Entitas.Godot.VisualDebugging.Plugins/Icons/minus.png" id="1_hvrpo"]
+
+[node name="Component" type="MarginContainer" node_paths=PackedStringArray("_background", "_collapseButton", "_nameLabel", "_removeComponentButton", "_valuesContainer")]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 152.0
+grow_horizontal = 2
+script = ExtResource("1_glq8h")
+_background = NodePath("ColorRect")
+_collapseButton = NodePath("Container/MarginContainer/Title/CollapsButton")
+_nameLabel = NodePath("Container/MarginContainer/Title/ComponentName")
+_removeComponentButton = NodePath("Container/MarginContainer/Title/DeleteButton")
+_valuesContainer = NodePath("Container/ValueContainer")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 2
+color = Color(0.3, 0, 0, 1)
+
+[node name="Container" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="Container"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Title" type="HBoxContainer" parent="Container/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="CollapsButton" type="CheckButton" parent="Container/MarginContainer/Title"]
+layout_mode = 2
+button_pressed = true
+
+[node name="ComponentName" type="Label" parent="Container/MarginContainer/Title"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Component Name
+"
+
+[node name="DeleteButton" type="Button" parent="Container/MarginContainer/Title"]
+texture_filter = 1
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_icons/icon = ExtResource("1_hvrpo")
+icon_alignment = 1
+
+[node name="ValueContainer" type="VBoxContainer" parent="Container"]
+layout_mode = 2
