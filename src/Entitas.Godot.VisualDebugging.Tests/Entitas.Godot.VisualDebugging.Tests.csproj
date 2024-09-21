@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Godot.NET.Sdk/4.3.0">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net6.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <_TargetFrameworkDirectories>Jenny.Plugins.ReferenceAssemblyPathsPreProcessor</_TargetFrameworkDirectories>
+    <_FullFrameworkReferenceAssemblyPaths>Jenny.Plugins.ReferenceAssemblyPathsPreProcessor</_FullFrameworkReferenceAssemblyPaths>
+    <DisableHandlePackageFileConflicts>true</DisableHandlePackageFileConflicts>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <RootNamespace>Entitas.Godot.VisualDebugging</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Entitas" Version="1.14.2" />
+    <PackageReference Include="Entitas.CodeGeneration.Attributes" Version="1.14.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../src/Generated/Game/GameComponentsLookup.cs" />
+    <Compile Include="../../src/Generated/Meta/MetaComponentsLookup.cs" />
+    <Compile Include="../../src/Generated/Input/InputComponentsLookup.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameFlagComponent.cs" />
+    <Compile Include="../../src/Generated/Meta/Components/MetaFlagComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameIntTypeComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameFloatTypeComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameVector2TypeComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameNode2DComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameRotationComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameRotationSpeedComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameEnumValuesComponent.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameMultiValues1Component.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameMultiValues2Component.cs" />
+    <Compile Include="../../src/Generated/Game/Components/GameMultiValues3Component.cs" />
+    <Compile Include="../../src/Generated/Game/GameAttribute.cs" />
+    <Compile Include="../../src/Generated/Input/InputAttribute.cs" />
+    <Compile Include="../../src/Generated/Meta/MetaAttribute.cs" />
+    <Compile Include="../../src/Generated/Game/GameContext.cs" />
+    <Compile Include="../../src/Generated/Input/InputContext.cs" />
+    <Compile Include="../../src/Generated/Meta/MetaContext.cs" />
+    <Compile Include="../../src/Generated/Game/GameMatcher.cs" />
+    <Compile Include="../../src/Generated/Input/InputMatcher.cs" />
+    <Compile Include="../../src/Generated/Meta/MetaMatcher.cs" />
+    <Compile Include="../../src/Generated/Contexts.cs" />
+    <Compile Include="../../src/Generated/Game/GameEntity.cs" />
+    <Compile Include="../../src/Generated/Input/InputEntity.cs" />
+    <Compile Include="../../src/Generated/Meta/MetaEntity.cs" />
+    <Compile Include="../../src/Generated/Feature.cs" />
+    <Compile Include="../../src/Generated/Extensions/IEntityExtensions.cs" />
+    <Compile Include="../../src/Generated/Components/Interfaces/IFlagEntity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entitas.Godot.VisualDebugging.Plugins\Entitas.Godot.VisualDebugging.Plugins.csproj" />
+  </ItemGroup>
+</Project>
