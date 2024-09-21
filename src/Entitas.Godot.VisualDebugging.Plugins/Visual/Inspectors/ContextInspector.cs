@@ -24,16 +24,13 @@ public partial class ContextInspector : BaseInspector
     AddThemeConstantOverride("margin_left", Consts.Margin);
     AddThemeConstantOverride("margin_bottom", Consts.Margin);
     AddThemeConstantOverride("margin_right", Consts.Margin);
-    LayoutMode = 2;
     AnchorsPreset = (int) LayoutPreset.FullRect;
-    AnchorRight = 1;
-    AnchorBottom = 1;
     GrowHorizontal = GrowDirection.Both;
     GrowVertical = GrowDirection.Both;
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
     VBoxContainer content = new();
-    content.LayoutMode = 2;
+    content.AddThemeConstantOverride("separation", Consts.DoubleMargin);
     content.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     AddChild(content);
     
@@ -41,7 +38,6 @@ public partial class ContextInspector : BaseInspector
 
     _entitiesContainer = new VBoxContainer();
     _entitiesContainer.AddThemeConstantOverride("separation", Consts.Margin);
-    _entitiesContainer.LayoutMode = 2;
     _entitiesContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(_entitiesContainer);
     
@@ -52,9 +48,8 @@ public partial class ContextInspector : BaseInspector
       _entities.Add(entity, label);
     }
     
-    HBoxContainer reusableContainer = new HBoxContainer();
+    HBoxContainer reusableContainer = new();
     reusableContainer.AddThemeConstantOverride("separation", Consts.Margin);
-    reusableContainer.LayoutMode = 2;
     reusableContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(reusableContainer);
     
@@ -65,7 +60,6 @@ public partial class ContextInspector : BaseInspector
     content.AddChild(CreateTitleLabel("Group:"));
     _groupContainer = new VBoxContainer();
     _groupContainer.AddThemeConstantOverride("separation", Consts.Margin);
-    _groupContainer.LayoutMode = 2;
     _groupContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(_groupContainer);
 

@@ -4,29 +4,30 @@ namespace Entitas.Godot;
 
 public partial class Transform2DValueDrawer : BaseValueDrawer
 {
-  private SpinBox _spinBoxRow1X;
-  private SpinBox _spinBoxRow1Y;
-  private SpinBox _spinBoxRow2X;
-  private SpinBox _spinBoxRow2Y;
-  private SpinBox _spinBoxRow3X;
-  private SpinBox _spinBoxRow3Y;
+  private SpinBox _spinBoxRowXX;
+  private SpinBox _spinBoxRowXY;
+  private SpinBox _spinBoxRowXO;
+  private SpinBox _spinBoxRowYX;
+  private SpinBox _spinBoxRowYY;
+  private SpinBox _spinBoxRowYO;
   protected override void InitializeDrawer()
   {
     GridContainer.Columns = 3;
 
-    _spinBoxRow1X ??= CreateRow("x1");
-    _spinBoxRow1Y ??= CreateRow("y1");
-    _spinBoxRow2X ??= CreateRow("x2");
-    _spinBoxRow2Y ??= CreateRow("y2");
-    _spinBoxRow3X ??= CreateRow("x3");
-    _spinBoxRow3Y ??= CreateRow("y3");
+    _spinBoxRowXX ??= CreateRow("xx");
+    _spinBoxRowXY ??= CreateRow("xy");
+    _spinBoxRowXO ??= CreateRow("xo");
+    _spinBoxRowYX ??= CreateRow("yx");
+    _spinBoxRowYY ??= CreateRow("yx");
+    _spinBoxRowYO ??= CreateRow("yo");
     
-    _spinBoxRow1X.ValueChanged += OnValue1XChanged;
-    _spinBoxRow1Y.ValueChanged += OnValue1YChanged;
-    _spinBoxRow2X.ValueChanged += OnValue2XChanged;
-    _spinBoxRow2Y.ValueChanged += OnValue2YChanged;
-    _spinBoxRow3X.ValueChanged += OnValue3XChanged;
-    _spinBoxRow3Y.ValueChanged += OnValue3YChanged;
+    _spinBoxRowXX.ValueChanged += OnValueXXChanged;
+    _spinBoxRowXY.ValueChanged += OnValueXYChanged;
+    _spinBoxRowXO.ValueChanged += OnValueXOChanged;
+    
+    _spinBoxRowYX.ValueChanged += OnValueYXChanged;
+    _spinBoxRowYY.ValueChanged += OnValueYYChanged;
+    _spinBoxRowYO.ValueChanged += OnValueYOChanged;
   }
 
   private SpinBox CreateRow(string title)
@@ -37,71 +38,73 @@ public partial class Transform2DValueDrawer : BaseValueDrawer
     spinBox.AllowGreater = true;
     spinBox.AllowLesser = true;
     spinBox.Rounded = false;
-    spinBox.Step = 0.1;
+    spinBox.Step = 0.0001;
     GridContainer.AddChild(spinBox);
     return spinBox;
   }
 
   protected override void CleanUpDrawer()
   {
-    _spinBoxRow1X.ValueChanged -= OnValue1XChanged;
-    _spinBoxRow1Y.ValueChanged -= OnValue1YChanged;
-    _spinBoxRow2X.ValueChanged -= OnValue2XChanged;
-    _spinBoxRow2Y.ValueChanged -= OnValue2YChanged;
-    _spinBoxRow3X.ValueChanged -= OnValue3XChanged;
-    _spinBoxRow3Y.ValueChanged -= OnValue3YChanged;
+    _spinBoxRowXX.ValueChanged -= OnValueXXChanged;
+    _spinBoxRowXY.ValueChanged -= OnValueXYChanged;
+    _spinBoxRowXO.ValueChanged -= OnValueXOChanged;
+    
+    _spinBoxRowYX.ValueChanged -= OnValueYXChanged;
+    _spinBoxRowYY.ValueChanged -= OnValueYYChanged;
+    _spinBoxRowYO.ValueChanged -= OnValueYOChanged;
   }
 
   public override void UpdateValue(object value)
   {
     Transform2D tr = (Transform2D)value;
-    _spinBoxRow1X.Value = tr.X.X;
-    _spinBoxRow1Y.Value = tr.X.Y;
-    _spinBoxRow2X.Value = tr.Y.X;
-    _spinBoxRow2Y.Value = tr.Y.Y;
-    _spinBoxRow3X.Value = tr.Origin.X;
-    _spinBoxRow3Y.Value = tr.Origin.Y;
+    _spinBoxRowXX.Value = tr.X.X;
+    _spinBoxRowXY.Value = tr.X.Y;
+    _spinBoxRowXO.Value = tr.Origin.X;
+    
+    _spinBoxRowYX.Value = tr.Y.X;
+    _spinBoxRowYY.Value = tr.Y.Y;
+    _spinBoxRowYO.Value = tr.Origin.Y;
   }
 
-  private void OnValue1XChanged(double x1)
+  private void OnValueXXChanged(double xx)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.X.X = (float)x1;
+    tr.X.X = (float)xx;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
   
-  private void OnValue1YChanged(double y1)
+  private void OnValueXYChanged(double xy)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.X.Y = (float)y1;
+    tr.X.Y = (float)xy;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
   
-  private void OnValue2XChanged(double x2)
+  private void OnValueYXChanged(double yx)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.Y.X = (float)x2;
+    tr.Y.X = (float)yx;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
   
-  private void OnValue2YChanged(double y2)
+  private void OnValueYYChanged(double yy)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.Y.Y = (float)y2;
+    tr.Y.Y = (float)yy;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
   
-  private void OnValue3XChanged(double x3)
+  private void OnValueXOChanged(double xo)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.Origin.X = (float)x3;
+    tr.Origin.X = (float)xo;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
   
-  private void OnValue3YChanged(double y3)
+  private void OnValueYOChanged(double yo)
   {
     Transform2D tr = ComponentInfo.GetFieldValue<Transform2D>(FieldName);
-    tr.Origin.Y = (float)y3;
+    tr.Origin.Y = (float)yo;
     ComponentInfo.SetFieldValue(FieldName, tr);
   }
 }

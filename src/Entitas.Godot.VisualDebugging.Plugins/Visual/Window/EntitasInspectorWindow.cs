@@ -51,20 +51,16 @@ public partial class EntitasInspectorWindow : Window
     AddChild(margin);
 
     HSplitContainer splitContainer = new();
-    splitContainer.LayoutMode = 2;
     margin.AddChild(splitContainer);
     
     _tree = new Tree();
-    _tree.LayoutMode = 2;
     _tree.CustomMinimumSize = new Vector2(200, 0);
     splitContainer.AddChild(_tree);
     
     PanelContainer panelContainer = new();
-    splitContainer.LayoutMode = 2;
     splitContainer.AddChild(panelContainer);
     
     _inspectorContainer = new ScrollContainer();
-    splitContainer.LayoutMode = 2;
     splitContainer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
     panelContainer.AddChild(_inspectorContainer);
     

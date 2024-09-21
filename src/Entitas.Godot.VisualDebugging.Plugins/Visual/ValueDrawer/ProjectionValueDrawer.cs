@@ -100,7 +100,7 @@ public partial class ProjectionValueDrawer : BaseValueDrawer
     spinBox.AllowGreater = true;
     spinBox.AllowLesser = true;
     spinBox.Rounded = false;
-    spinBox.Step = 0.1;
+    spinBox.Step = 0.0001;
     GridContainer.AddChild(spinBox);
 
     return spinBox;
