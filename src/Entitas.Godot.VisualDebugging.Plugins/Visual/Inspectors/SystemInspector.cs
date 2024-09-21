@@ -16,13 +16,12 @@ public partial class SystemInspector : BaseInspector
     ) {
       _title = new Label();
       _title.AddThemeFontSizeOverride("font_size", Consts.FontContentSize);
-      _title.LayoutMode = 2;
       _title.Text = title;
       parent.AddChild(_title);
 
       _value = new SpinBox();
       _value.AddThemeFontSizeOverride("font_size", Consts.FontContentSize);
-      _value.LayoutMode = 2;
+      _value.SizeFlagsHorizontal = SizeFlags.ExpandFill;
       _value.Step = 0.0001;
       _value.AllowGreater = true;
       _value.AllowLesser = true;
@@ -61,7 +60,6 @@ public partial class SystemInspector : BaseInspector
     AddThemeConstantOverride("margin_left", Consts.Margin);
     AddThemeConstantOverride("margin_bottom", Consts.Margin);
     AddThemeConstantOverride("margin_right", Consts.Margin);
-    LayoutMode =   2;
     AnchorsPreset = (int) LayoutPreset.FullRect;
     AnchorRight = 1;
     AnchorBottom = 1;
@@ -69,34 +67,38 @@ public partial class SystemInspector : BaseInspector
     GrowVertical = GrowDirection.Both;
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
-    ColorRect colorRect = new();
-    colorRect.Color = new Color(1, 0, 0);
-    colorRect.SizeFlagsVertical = SizeFlags.ExpandFill;
-    colorRect.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-    AddChild(colorRect);
- 
-    GridContainer gridContainer = new();
-    gridContainer.AddThemeConstantOverride("h_separation", Consts.Margin);
-    gridContainer.AddThemeConstantOverride("v_separation", Consts.Margin);
-    gridContainer.LayoutMode = 2;
-    gridContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-    gridContainer.GrowHorizontal = GrowDirection.Both;
-    gridContainer.Columns = 2;
-    AddChild(gridContainer);
-
+    VBoxContainer container = new();
+    container.AddThemeConstantOverride("separation", Consts.DoubleMargin);
+    container.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    AddChild(container);
+    
+    HBoxContainer titleContainer = new();
+    titleContainer.AddThemeConstantOverride("separation", Consts.Margin);
+    titleContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    container.AddChild(titleContainer);
+    
     Label title = new();
     title.AddThemeFontSizeOverride("font_size", Consts.FontTitleSize);
     title.Text = _systemInfo.SystemName;
     title.LayoutMode = 2;
-    gridContainer.AddChild(title);
+    titleContainer.AddChild(title);
     
     _activate = new CheckBox();
     _activate.LayoutMode = 2;
     _activate.ClipText = true;
     _activate.ButtonPressed = _systemInfo.IsActive;
     _activate.Pressed += OnActivationChanged;
-    gridContainer.AddChild(_activate);
+    titleContainer.AddChild(_activate);
 
+    
+    GridContainer gridContainer = new();
+    gridContainer.AddThemeConstantOverride("h_separation", Consts.Margin);
+    gridContainer.AddThemeConstantOverride("v_separation", Consts.Margin);
+    gridContainer.SizeFlagsVertical = SizeFlags.ExpandFill;
+    gridContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    gridContainer.Columns = 2;
+    container.AddChild(gridContainer);
+    
     if (_systemInfo.IsInitializeSystems) _initializationRow = new SystemExecTimeRow("Initialize Time:", gridContainer);
     if (_systemInfo.IsExecuteSystems) _executeRow = new SystemExecTimeRow("Execute Time:", gridContainer);
     if (_systemInfo.IsCleanupSystems) _cleanupRow = new SystemExecTimeRow("Cleanup Time:", gridContainer);

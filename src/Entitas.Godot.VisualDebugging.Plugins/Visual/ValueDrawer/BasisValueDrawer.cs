@@ -21,7 +21,7 @@ public partial class BasisValueDrawer : BaseValueDrawer
     GridContainer.Columns = 3;
     if (_spinBoxRow1X == null)
     {
-      CreateLabel("Basis", new Color(1f, 1f, 1f));
+      CreateLabel("Basis");
       CreateDummy();
       CreateDummy();
     }
@@ -59,11 +59,10 @@ public partial class BasisValueDrawer : BaseValueDrawer
     return control;
   }
 
-  private Label CreateLabel(string title, Color titleColor)
+  private Label CreateLabel(string title)
   {
     Label label = new();
     label.Text = title;
-    label.Set("theme_override_colors/font_color", titleColor);
     GridContainer.AddChild(label);
     return label;
   }
@@ -75,7 +74,7 @@ public partial class BasisValueDrawer : BaseValueDrawer
     spinBox.AllowGreater = true;
     spinBox.AllowLesser = true;
     spinBox.Rounded = false;
-    spinBox.Step = 0.1;
+    spinBox.Step = 0.0001;
     GridContainer.AddChild(spinBox);
 
     return spinBox;

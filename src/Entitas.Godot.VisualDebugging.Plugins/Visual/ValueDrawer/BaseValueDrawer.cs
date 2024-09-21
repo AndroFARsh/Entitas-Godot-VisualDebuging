@@ -37,8 +37,6 @@ public abstract partial class BaseValueDrawer : MarginContainer
     if (GetChildCount() > 0) return;
     
     AnchorsPreset = (int) LayoutPreset.FullRect;
-    AnchorRight = 1;
-    AnchorBottom = 1;
     GrowHorizontal = GrowDirection.Both;
     GrowVertical = GrowDirection.Both;
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -49,7 +47,7 @@ public abstract partial class BaseValueDrawer : MarginContainer
     _bg.Color = new Color(1, 1, 1, 0.1f);
     AddChild(_bg);
 
-    MarginContainer marginContainer = new MarginContainer();
+    MarginContainer marginContainer = new();
     marginContainer.AddThemeConstantOverride("margin_top", Consts.Margin);
     marginContainer.AddThemeConstantOverride("margin_left", Consts.Margin);
     marginContainer.AddThemeConstantOverride("margin_bottom", Consts.Margin);
@@ -58,22 +56,15 @@ public abstract partial class BaseValueDrawer : MarginContainer
 
     HBoxContainer rowContainer = new HBoxContainer();
     rowContainer.AddThemeConstantOverride("separation", Consts.Margin);
-    rowContainer.LayoutMode = 2;
     rowContainer.SizeFlagsVertical = SizeFlags.ShrinkBegin;
     marginContainer.AddChild(rowContainer);
 
     _title = new Label();
-    _title.LayoutMode = 2;
     _title.SizeFlagsVertical = SizeFlags.ShrinkBegin;
     rowContainer.AddChild(_title);
     
     _gridContainer = new GridContainer();
-    // _title.LayoutMode = 2;
-    // _title.AnchorRight = 1;
-    // _title.AnchorBottom = 1;
-    //_title.AnchorsPreset = (int)LayoutPreset.FullRect;
-    // _title.SizeFlagsVertical = SizeFlags.ShrinkBegin;
-    _title.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    _gridContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     rowContainer.AddChild(_gridContainer);
   }
 

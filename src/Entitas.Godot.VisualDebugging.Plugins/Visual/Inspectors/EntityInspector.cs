@@ -53,10 +53,7 @@ public partial class EntityInspector : BaseInspector
     AddThemeConstantOverride("margin_left", Consts.Margin);
     AddThemeConstantOverride("margin_bottom", Consts.Margin);
     AddThemeConstantOverride("margin_right", Consts.Margin);
-    LayoutMode = 2;
     AnchorsPreset = (int) LayoutPreset.FullRect;
-    AnchorRight = 1;
-    AnchorBottom = 1;
     GrowHorizontal = GrowDirection.Both;
     GrowVertical = GrowDirection.Both;
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -76,11 +73,11 @@ public partial class EntityInspector : BaseInspector
     _cloneEntityButton.Text = "Clone Entity";
     content.AddChild(_cloneEntityButton);
 
-    HBoxContainer addComponentContent = new HBoxContainer();
+    HBoxContainer addComponentContent = new();
     addComponentContent.AddThemeConstantOverride("separation", Consts.Margin);
     content.AddChild(addComponentContent);
 
-    Label addComponentTitle = new Label();
+    Label addComponentTitle = new();
     addComponentTitle.AddThemeFontSizeOverride("font_size", Consts.FontTitleSize);
     addComponentTitle.Text = "Add Component";
     addComponentContent.AddChild(addComponentTitle);
@@ -92,7 +89,7 @@ public partial class EntityInspector : BaseInspector
     _componentsButton.FitToLongestItem = false;
     addComponentContent.AddChild(_componentsButton);
     
-    HBoxContainer searchContent = new HBoxContainer();
+    HBoxContainer searchContent = new();
     searchContent.AddThemeConstantOverride("separation", Consts.Margin);
     content.AddChild(searchContent);
 
