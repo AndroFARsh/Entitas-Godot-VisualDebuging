@@ -8,3 +8,14 @@
 /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/refint/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll
 /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.pdb
 /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/ref/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/bin/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.deps.json
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/bin/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/bin/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.pdb
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj.AssemblyReference.cache
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj.CoreCompileInputs.cache
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.sourcelink.json
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/refint/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.pdb
+/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/Debug/net6.0/ref/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll

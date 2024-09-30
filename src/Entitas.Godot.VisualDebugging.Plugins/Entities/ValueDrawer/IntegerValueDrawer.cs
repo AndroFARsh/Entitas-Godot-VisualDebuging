@@ -2,9 +2,9 @@ using Godot;
 
 namespace Entitas.Godot;
 
-public partial class LongValueDrawer : BaseValueDrawer
+public abstract partial class IntegerValueDrawer : BaseValueDrawer
 {
-  private SpinBox _spinBox;
+  protected SpinBox _spinBox;
   
   protected override void InitializeDrawer()
   {
@@ -23,13 +23,11 @@ public partial class LongValueDrawer : BaseValueDrawer
     GridContainer.AddChild(spinBox);
     return spinBox;
   }
-  
+
   protected override void CleanUpDrawer()
   {
     _spinBox.ValueChanged -= OnValueChanged;
   }
   
-  public override void UpdateValue(object value) => _spinBox.Value = (long)value;
-  
-  private void OnValueChanged(double value) => ComponentInfo.SetFieldValue(FieldName, (long)value);
+  protected abstract void OnValueChanged(double value);
 }

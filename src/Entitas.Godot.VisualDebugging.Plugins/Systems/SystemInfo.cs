@@ -1,4 +1,3 @@
-using System;
 using Extensions;
 
 namespace Entitas.Godot;
@@ -20,27 +19,9 @@ public class SystemInfo
   public bool IsReactiveSystems =>
     (_interfaceFlags & SystemInterfaceFlags.ReactiveSystem) == SystemInterfaceFlags.ReactiveSystem;
 
-  private double _initializationDuration;
-  public double InitializationDuration
-  {
-    get => _initializationDuration;
-    set
-    {
-      _initializationDuration = value;
-      InitializationDurationChanged?.Invoke();
-    }
-  }
-  
-  private double _teardownDuration;
-  public double TeardownDuration
-  {
-    get => _teardownDuration;
-    set
-    {
-      _teardownDuration = value;
-      TeardownDurationChanged?.Invoke();
-    }
-  }
+  public double InitializationDuration { get; set; }
+
+  public double TeardownDuration { get; set; }
 
   public double AccumulatedExecutionDuration => _accumulatedExecutionDuration;
   public double MinExecutionDuration => _minExecutionDuration;
@@ -69,7 +50,6 @@ public class SystemInfo
 
   private double _accumulatedExecutionDuration;
   
-  
   private double _minExecutionDuration;
   private double _maxExecutionDuration;
   private int _executionDurationsCount;
@@ -78,12 +58,7 @@ public class SystemInfo
   private double _minCleanupDuration;
   private double _maxCleanupDuration;
   private int _cleanupDurationsCount;
-
-  public Action InitializationDurationChanged;
-  public Action ExecuteDurationChanged;
-  public Action CleanupDurationChanged;
-  public Action TeardownDurationChanged;
-
+  
   public SystemInfo(ISystem system)
   {
     System = system;
@@ -106,7 +81,6 @@ public class SystemInfo
 
     _accumulatedExecutionDuration += executionDuration;
     _executionDurationsCount += 1;
-    ExecuteDurationChanged?.Invoke();
   }
 
   public void AddCleanupDuration(double cleanupDuration)
@@ -119,7 +93,6 @@ public class SystemInfo
 
     _accumulatedCleanupDuration += cleanupDuration;
     _cleanupDurationsCount += 1;
-    CleanupDurationChanged?.Invoke();
   }
 
   public void ResetDurations()

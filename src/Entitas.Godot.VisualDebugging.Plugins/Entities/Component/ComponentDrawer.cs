@@ -7,7 +7,7 @@ namespace Entitas.Godot;
 public partial class ComponentDrawer : MarginContainer
 { 
   private ComponentInfo _componentInfo;
-  private EntityObserverNode _entityObserverNode;
+  private IEntity _entity;
   private Dictionary<string, BaseValueDrawer> _valueDrawers = new();
 
   private ColorRect _bg;
@@ -19,12 +19,12 @@ public partial class ComponentDrawer : MarginContainer
   public ComponentInfo ComponentInfo => _componentInfo;
   public bool ShouldCollapse => _collapseButton.ButtonPressed && !_componentInfo.IsFlaggableComponent;
   
-  public void Initialize(EntityObserverNode entityObserverNode, ComponentInfo componentInfo)
+  public void Initialize(IEntity entity, ComponentInfo componentInfo)
   {
     InitializeTree();
     
-    _bg.Color = Color.FromHsv(Random.Shared.NextSingle(), 1, 0.2f);
-    _entityObserverNode = entityObserverNode;
+    _bg.Color = Color.FromHsv(Random.Shared.NextSingle(), 1, 0.4f);
+    _entity = entity;
     _componentInfo = componentInfo;
     _nameLabel.Name = componentInfo.Name;
     _nameLabel.Text = componentInfo.Name;
@@ -32,13 +32,13 @@ public partial class ComponentDrawer : MarginContainer
     
     _collapseButton.Pressed += OnCollapsePressed;
     _removeComponentButton.Pressed += OnRemoveComponentPressed;
-    _entityObserverNode.ComponentInfoAction += OnComponentInfoAction;
-
-    int i = 0;
+    
+    _entity.OnComponentReplaced += OnComponentReplaced;
+    
     foreach (string fieldName in componentInfo.FieldNames)
-      CreateDrawer(componentInfo, fieldName, i++ % 2 == 0);
+      CreateDrawer(componentInfo, fieldName);
   }
-
+  
   private void InitializeTree()
   {
     if (GetChildCount() > 0) return;
@@ -56,43 +56,38 @@ public partial class ComponentDrawer : MarginContainer
     _bg.Color = new Color(1, 1, 1, 0.1f);
     AddChild(_bg);
 
-    VBoxContainer container = new VBoxContainer();
+    VBoxContainer container = new();
     container.AddThemeConstantOverride("separation", Consts.Margin);
     container.LayoutMode = 2;
     AddChild(container);
 
-    MarginContainer titleMarginContainer = new MarginContainer();
+    MarginContainer titleMarginContainer = new();
     titleMarginContainer.AddThemeConstantOverride("margin_top", Consts.Margin);
     titleMarginContainer.AddThemeConstantOverride("margin_left", Consts.Margin);
     titleMarginContainer.AddThemeConstantOverride("margin_bottom", Consts.Margin);
     titleMarginContainer.AddThemeConstantOverride("margin_right", Consts.Margin);
-    titleMarginContainer.LayoutMode = 2;
     container.AddChild(titleMarginContainer);
 
-    HBoxContainer titleContainer = new HBoxContainer();
+    HBoxContainer titleContainer = new();
     titleContainer.AddThemeConstantOverride("separation", Consts.Margin);
-    titleContainer.LayoutMode = 2;
     titleMarginContainer.AddChild(titleContainer);
 
     _collapseButton = new CheckButton();
-    _collapseButton.LayoutMode = 2;
     _collapseButton.ButtonPressed = true;
     titleContainer.AddChild(_collapseButton);
 
     _nameLabel = new Label();
-    _nameLabel.LayoutMode = 2;
     _nameLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     _nameLabel.AddThemeFontSizeOverride("font_size", Consts.FontTitleSize);
     titleContainer.AddChild(_nameLabel);
 
     _removeComponentButton = new Button();
     _removeComponentButton.CustomMinimumSize = new Vector2(45, 45);
-    _removeComponentButton.LayoutMode = 2;
     _removeComponentButton.Text = "—";
     titleContainer.AddChild(_removeComponentButton);
 
     _valuesContainer = new VBoxContainer();
-    _valuesContainer.LayoutMode = 2;
+    _valuesContainer.AddThemeConstantOverride("separation", Consts.Margin);
     container.AddChild(_valuesContainer);
   }
 
@@ -104,22 +99,22 @@ public partial class ComponentDrawer : MarginContainer
       drawer.CleanUp();
       
       Type type = _componentInfo.GetFieldType(fieldName);
-      EntitasRoot.Pool.Retain(type, drawer);
+      EntitasRoot.Global.Pool.Retain(type, drawer);
     }
     _valueDrawers.Clear();
     
     _collapseButton.Pressed -= OnCollapsePressed;
     _removeComponentButton.Pressed -= OnRemoveComponentPressed;
-    _entityObserverNode.ComponentInfoAction -= OnComponentInfoAction;
+    _entity.OnComponentReplaced -= OnComponentReplaced;
   }
   
-  private void CreateDrawer(ComponentInfo componentInfo, string fieldName, bool showBg)
+  private void CreateDrawer(ComponentInfo componentInfo, string fieldName)
   { 
     Type type = _componentInfo.GetFieldType(fieldName);
-    if (!EntitasRoot.Pool.Request(type, out BaseValueDrawer drawer))
+    if (!EntitasRoot.Global.Pool.Request(type, out BaseValueDrawer drawer))
       drawer = type.CreateDrawer();
     
-    drawer.Initialize(componentInfo, fieldName, showBg);
+    drawer.Initialize(componentInfo, fieldName);
     
     _valueDrawers.Add(fieldName, drawer);
     _valuesContainer.AddChild(drawer);
@@ -127,9 +122,10 @@ public partial class ComponentDrawer : MarginContainer
 
   private void OnCollapsePressed() => _valuesContainer.Visible = ShouldCollapse;
   
-  private void OnComponentInfoAction(ComponentActionType action, ComponentInfo componentInfo)
+  private void OnComponentReplaced(IEntity entity, int index, IComponent previousComponent, IComponent newComponent)
   {
-    if (action != ComponentActionType.Replaced || _componentInfo.Name != componentInfo.Name) return;
+    ComponentInfo componentInfo = new(entity, index, newComponent);
+    if (_componentInfo.Name != componentInfo.Name) return;
     
     foreach (string fieldName in componentInfo.FieldNames)
       if (_valueDrawers.TryGetValue(fieldName, out BaseValueDrawer drawer))

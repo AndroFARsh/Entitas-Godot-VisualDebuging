@@ -7,18 +7,40 @@ public partial class ContextInspector : BaseInspector
 {
   private Dictionary<IEntity, Label> _entities = new();
   private Dictionary<IGroup, Label> _groups = new();
+  
   private Container _entitiesContainer;
   private Label _reusable;
   private Container _groupContainer;
   
-  private ContextObserverNode _contextObserverNode;
   private IContext _context;
 
-  public override void Initialize(Node node)
+  public void Initialize(IContext context)
   {
-    if (node == _contextObserverNode) return;
-    _contextObserverNode = (ContextObserverNode)node;
-    _context = _contextObserverNode.Context;
+    if (_context == context) return;
+    _context = context;
+
+    InitializeTree();
+    
+    foreach (IEntity entity in _context.Entities())
+    {
+      Label label = CreateContentLabel(entity.ToString());
+      _entitiesContainer.AddChild(label);
+      _entities.Add(entity, label);
+    }
+
+    _reusable.Text = $"[{_context.reusableEntitiesCount}]";
+    
+    // foreach (IGroup<IEntity> group in _context.Groups())
+    //   CreateGroupLabel(group);
+    
+    _context.OnEntityCreated += OnEntityCreated;
+    _context.OnEntityDestroyed += OnEntityDestroyed;
+    _context.OnGroupCreated += OnGroupCreated;
+  }
+
+  private void InitializeTree()
+  {
+    if (GetChildCount() > 0) return;
     
     AddThemeConstantOverride("margin_top", Consts.Margin);
     AddThemeConstantOverride("margin_left", Consts.Margin);
@@ -30,7 +52,6 @@ public partial class ContextInspector : BaseInspector
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
     VBoxContainer content = new();
-    content.AddThemeConstantOverride("separation", Consts.DoubleMargin);
     content.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     AddChild(content);
     
@@ -41,39 +62,25 @@ public partial class ContextInspector : BaseInspector
     _entitiesContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(_entitiesContainer);
     
-    foreach (IEntity entity in _context.Entities())
-    {
-      Label label = CreateContentLabel(entity.ToString());
-      _entitiesContainer.AddChild(label);
-      _entities.Add(entity, label);
-    }
-    
     HBoxContainer reusableContainer = new();
     reusableContainer.AddThemeConstantOverride("separation", Consts.Margin);
     reusableContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(reusableContainer);
     
     reusableContainer.AddChild(CreateTitleLabel("Reusable:"));
-    _reusable = CreateContentLabel($"[{_contextObserverNode.Context.reusableEntitiesCount}]");
-    reusableContainer.AddChild(_reusable);
+    reusableContainer.AddChild(_reusable = CreateContentLabel("[0]"));
     
     content.AddChild(CreateTitleLabel("Group:"));
     _groupContainer = new VBoxContainer();
     _groupContainer.AddThemeConstantOverride("separation", Consts.Margin);
+    _groupContainer.LayoutMode = 2;
     _groupContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
     content.AddChild(_groupContainer);
-
-    // foreach (IGroup<IEntity> group in _context.Groups())
-    //   CreateGroupLabel(group);
-    
-    _context.OnEntityCreated += OnEntityCreated;
-    _context.OnEntityDestroyed += OnEntityDestroyed;
-    _context.OnGroupCreated += OnGroupCreated;
   }
 
   private Label CreateTitleLabel(string text)
   {
-    Label label = new Label();
+    Label label = new();
     label.AddThemeFontSizeOverride("font_size", Consts.FontTitleSize);
     label.Text = text;
     return label;
@@ -81,7 +88,7 @@ public partial class ContextInspector : BaseInspector
   
   private Label CreateContentLabel(string text)
   {
-    Label label = new Label();
+    Label label = new();
     label.AddThemeFontSizeOverride("font_size", Consts.FontContentSize);
     label.Text = text;
     return label;
@@ -89,6 +96,8 @@ public partial class ContextInspector : BaseInspector
 
   public override void CleanUp()
   {
+    if (_context == null) return;
+    
     _context.OnEntityCreated -= OnEntityCreated;
     _context.OnEntityDestroyed -= OnEntityDestroyed;
     _context.OnGroupCreated -= OnGroupCreated;
@@ -99,20 +108,9 @@ public partial class ContextInspector : BaseInspector
     foreach (Label groupLabel in _groups.Values)
       groupLabel.QueueFree();
     
-    foreach (Node child in GetChildren())
-      child.QueueFree();
-    
-    _entitiesContainer.QueueFree();
-    _reusable.QueueFree();
-    _groupContainer.QueueFree();
-    
     _entities.Clear();
     _groups.Clear();
-
-    _entitiesContainer = null;
-    _reusable = null;
-    _groupContainer = null;
-    _contextObserverNode = null;
+    
     _context = null;
   }
   
@@ -122,7 +120,7 @@ public partial class ContextInspector : BaseInspector
     _groups.Add(group, label);
     _groupContainer.AddChild(label);
     
-    _reusable.Text = $"[{_contextObserverNode.Context.reusableEntitiesCount}]";
+    _reusable.Text = $"[{_context.reusableEntitiesCount}]";
   }
 
   private void OnEntityDestroyed(IContext context, IEntity entity)
@@ -132,7 +130,7 @@ public partial class ContextInspector : BaseInspector
       _entitiesContainer.RemoveChild(label);
       label.QueueFree();
       
-      _reusable.Text = $"[{_contextObserverNode.Context.reusableEntitiesCount}]";
+      _reusable.Text = $"[{_context.reusableEntitiesCount}]";
     }
   }
 
@@ -141,5 +139,7 @@ public partial class ContextInspector : BaseInspector
     Label label = CreateContentLabel(entity.ToString());
     _entities.Add(entity, label);
     _entitiesContainer.AddChild(label);
+    
+    _reusable.Text = $"[{_context.reusableEntitiesCount}]";
   }
 }

@@ -6,7 +6,7 @@ public static class TypeToStringExtension
 {
   public static string TypeName(this Type type)
   {
-    string fullTypeName = type.FullName;
+    string fullTypeName = type.ToString();
     int startIndex = fullTypeName.LastIndexOf(".", StringComparison.Ordinal) + 1;
     return fullTypeName.Substring(startIndex, fullTypeName.Length - startIndex);
   }

@@ -75,9 +75,7 @@ public partial class Contexts {
 
   public void CreateContextObserver(Entitas.IContext context)
   { 
-    var observerInstance = new Entitas.Godot.ContextObserverNode();
-    observerInstance.Initialize(context);
-    Entitas.Godot.EntitasRoot.Entities.AddChild(observerInstance);
+    Entitas.Godot.EntitasRoot.Register(context);
   }
 
 #endif

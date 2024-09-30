@@ -22,12 +22,23 @@ public class Feature : Entitas.Godot.DebugSystems {
 
 #else
 
-public class Feature : Entitas.Systems {
+public class Feature : Entitas.Systems, System.IDisposable {
 
     public Feature(string name) {
     }
 
     public Feature() {
+    }
+
+    public virtual void Dispose()
+    {
+        DeactivateReactiveSystems();
+        ClearReactiveSystems();
+        
+        _initializeSystems.Clear();
+        _executeSystems.Clear();
+        _cleanupSystems.Clear();
+        _tearDownSystems.Clear();
     }
 }
 
