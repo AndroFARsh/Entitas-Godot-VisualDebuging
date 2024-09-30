@@ -1944,11 +1944,11 @@
   "project": {
     "version": "0.1.0",
     "restore": {
-      "projectUniqueName": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
+      "projectUniqueName": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
       "projectName": "Entitas.Godot.VisualDebuging.CodeGenerator.Plugin",
-      "projectPath": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
+      "projectPath": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
       "packagesPath": "/Users/anton_kukhlevskyi/.nuget/packages/",
-      "outputPath": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/",
+      "outputPath": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/anton_kukhlevskyi/.nuget/NuGet/NuGet.Config"
@@ -2035,13 +2035,5 @@
         "runtimeIdentifierGraphPath": "/Users/anton_kukhlevskyi/.dotnet/sdk/8.0.300/RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/project.nuget.cache : Found invalid data while decoding."
-    }
-  ]
+  }
 }

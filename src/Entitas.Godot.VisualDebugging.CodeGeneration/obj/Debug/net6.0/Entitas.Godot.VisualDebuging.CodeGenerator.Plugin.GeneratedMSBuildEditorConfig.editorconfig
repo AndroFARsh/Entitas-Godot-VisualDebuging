@@ -16,6 +16,6 @@ build_property.EnforceExtendedAnalyzerRules = true
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Entitas.Godot
-build_property.ProjectDir = /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/
+build_property.ProjectDir = /Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

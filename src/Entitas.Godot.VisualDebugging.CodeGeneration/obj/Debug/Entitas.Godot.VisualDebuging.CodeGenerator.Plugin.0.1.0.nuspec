@@ -6,7 +6,7 @@
     <authors>Anton Kukhlevskyi</authors>
     <icon>icon.png</icon>
     <description>Library that generate helper classes for visual debuging</description>
-    <repository type="git" />
+    <repository type="git" commit="c0ba8fcccea4d94db4258272542d4307644c1b12" />
     <dependencies>
       <group targetFramework="net6.0">
         <dependency id="DesperateDevs.Serialization" version="2.0.2" exclude="Build,Analyzers" />
@@ -19,6 +19,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/bin/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll" target="lib/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll" />
+    <file src="/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/bin/Debug/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll" target="lib/net6.0/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.dll" />
   </files>
 </package>

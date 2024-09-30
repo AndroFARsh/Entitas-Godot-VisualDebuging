@@ -18,6 +18,7 @@ public partial class NodePathValueDrawer : BaseValueDrawer
     textEdit.SetFitContentHeightEnabled(true);
     textEdit.SizeFlagsVertical = SizeFlags.ExpandFill;
     textEdit.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+    textEdit.ScrollFitContentHeight = true;
     GridContainer.AddChild(textEdit);
     return textEdit;
   }

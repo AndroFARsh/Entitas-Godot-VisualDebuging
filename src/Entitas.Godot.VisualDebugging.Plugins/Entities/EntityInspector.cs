@@ -14,20 +14,25 @@ public partial class EntityInspector : BaseInspector
   private Container _componentsContainer;
 
   private ContextInfo _contextInfo;
-  private EntityObserverNode _entityObserverNode;
+  private IEntity _entity;
+  private IContext _context;
   
-  private readonly Dictionary<ComponentInfo, ComponentDrawer> _drawers = new();
+  private readonly Dictionary<IComponent, ComponentDrawer> _drawers = new();
 
-  public override void Initialize(Node node)
+  public void Initialize(IEntity entity)
   {
-    if (node == _entityObserverNode) return;
-    _entityObserverNode = (EntityObserverNode)node;
-    _contextInfo = _entityObserverNode.Context.contextInfo;
+    if (_entity == entity) return;
+    
+    _entity = entity;
+    _context = EntitasRoot.Global.GetContext(entity);
+    _contextInfo = _context.contextInfo;
     
     InitializeTree();
 
+    _entity.OnComponentAdded += OnComponentAdded;
+    _entity.OnComponentRemoved += OnComponentRemoved;
+    
     _componentsButton.ItemSelected += OnComponentAddAction;
-    _entityObserverNode.ComponentInfoAction += OnComponentInfoAction;
     _destroyEntityButton.Pressed += OnDestroyEntityPressed;
     _cloneEntityButton.Pressed += OnCloneEntityPressed;
     _searchTextEdit.TextChanged += OnSearchTextChanged;
@@ -35,14 +40,42 @@ public partial class EntityInspector : BaseInspector
 
     FillComponentDropDown();
 
-    foreach (ComponentInfo componentInfo in _entityObserverNode.Components)
+    foreach (int index in _entity.GetComponentIndices())
     {
-      ComponentDrawer componentDrawer = CreateComponentDrawer(_entityObserverNode, componentInfo);
+      IComponent component = _entity.GetComponent(index);
+      ComponentInfo componentInfo = new(entity, index, component);
+      ComponentDrawer componentDrawer = CreateComponentDrawer(_entity, componentInfo);
       _componentsContainer.AddChild(componentDrawer);
-      _drawers.Add(componentInfo, componentDrawer);
+      _drawers.Add(component, componentDrawer);
     }
 
     Visible = true;
+  }
+
+  private void OnComponentRemoved(IEntity entity, int index, IComponent component)
+  {
+    if (_drawers.TryGetValue(component, out ComponentDrawer drawer))
+    {
+      drawer.CleanUp();
+      EntitasRoot.Global.Pool.Retain(typeof(ComponentInfo), drawer);
+      _drawers.Remove(component);
+      _componentsContainer.RemoveChild(drawer);
+
+      FillComponentDropDown();
+    }
+  }
+  
+  private void OnComponentAdded(IEntity entity, int index, IComponent component)
+  {
+    OnComponentRemoved(entity, index, component);
+    
+    ComponentInfo componentInfo = new(entity, index, component);
+    ComponentDrawer componentDrawer = CreateComponentDrawer(entity, componentInfo);
+    _componentsContainer.AddChild(componentDrawer);
+    
+    _drawers.Add(component, componentDrawer);
+
+    FillComponentDropDown();
   }
 
   private void InitializeTree()
@@ -113,15 +146,14 @@ public partial class EntityInspector : BaseInspector
     searchContent.AddChild(_clearSearchButton);
 
     _componentsContainer = new VBoxContainer();
+    _componentsContainer.AddThemeConstantOverride("separation", Consts.Margin);
     content.AddChild(_componentsContainer);
   }
 
   private void FillComponentDropDown()
   {
     _componentsButton.Clear();
-    
-    IEntity entity = _entityObserverNode?.Entity;
-    if (entity == null) return;
+    if (_entity == null) return;
 
     int index = 0;
     foreach (Type componentType in _contextInfo.componentTypes)
@@ -137,39 +169,41 @@ public partial class EntityInspector : BaseInspector
     _componentsButton.Selected = -1;
   }
 
-  private ComponentDrawer CreateComponentDrawer(EntityObserverNode entityObserverNode, ComponentInfo componentInfo)
+  private ComponentDrawer CreateComponentDrawer(IEntity entity, ComponentInfo componentInfo)
   {
-    if (!EntitasRoot.Pool.Request(typeof(ComponentInfo), out ComponentDrawer drawer))
+    if (!EntitasRoot.Global.Pool.Request(typeof(ComponentInfo), out ComponentDrawer drawer))
       drawer = new ComponentDrawer();
 
-    drawer.Initialize(entityObserverNode, componentInfo);
+    drawer.Initialize(entity, componentInfo);
     return drawer;
   }
 
   public override void CleanUp()
   {
-    if (_entityObserverNode == null) return;
+    if (_entity == null) return;
 
     _componentsButton.Clear();
-
-    foreach ((ComponentInfo _, ComponentDrawer drawer) in _drawers)
+    foreach ((IComponent _, ComponentDrawer drawer) in _drawers)
     {
       drawer.CleanUp();
+      
       _componentsContainer.RemoveChild(drawer);
 
-      EntitasRoot.Pool.Retain(typeof(ComponentInfo), drawer);
+      EntitasRoot.Global.Pool.Retain(typeof(ComponentInfo), drawer);
     }
 
     _drawers.Clear();
 
     _componentsButton.ItemSelected -= OnComponentAddAction;
-    _entityObserverNode.ComponentInfoAction -= OnComponentInfoAction;
     _destroyEntityButton.Pressed -= OnDestroyEntityPressed;
     _cloneEntityButton.Pressed -= OnCloneEntityPressed;
     _searchTextEdit.TextChanged -= OnSearchTextChanged;
     _clearSearchButton.Pressed -= OnClearSearchPressed;
 
-    _entityObserverNode = null;
+    _entity.OnComponentAdded -= OnComponentAdded;
+    _entity.OnComponentRemoved -= OnComponentRemoved;
+    
+    _entity = null;
     _contextInfo = null;
     Visible = false;
   }
@@ -180,37 +214,7 @@ public partial class EntityInspector : BaseInspector
     OnSearchTextChanged();
   }
 
-  private void OnComponentInfoAction(ComponentActionType action, ComponentInfo componentInfo)
-  {
-    switch (action)
-    {
-      case ComponentActionType.Added:
-      {
-        ComponentDrawer componentDrawer = CreateComponentDrawer(_entityObserverNode, componentInfo);
-        _componentsContainer.AddChild(componentDrawer);
-        _drawers.Add(componentInfo, componentDrawer);
-
-        FillComponentDropDown();
-        break;
-      }
-      case ComponentActionType.Removed:
-      {
-        if (_drawers.TryGetValue(componentInfo, out ComponentDrawer drawer))
-        {
-          drawer.CleanUp();
-          EntitasRoot.Pool.Retain(typeof(ComponentInfo), drawer);
-          _drawers.Remove(componentInfo);
-          _componentsContainer.RemoveChild(drawer);
-
-          FillComponentDropDown();
-        }
-
-        break;
-      }
-    }
-  }
-
-  private void OnDestroyEntityPressed() => _entityObserverNode.Entity.Destroy();
+  private void OnDestroyEntityPressed() => _entity.Destroy();
 
   private void OnSearchTextChanged()
   {
@@ -225,29 +229,41 @@ public partial class EntityInspector : BaseInspector
 
   private void OnCloneEntityPressed()
   {
-    IEntity newEntity = _entityObserverNode.Context.CreateEntity();
-    foreach (ComponentInfo componentInfo in _entityObserverNode.Components)
+    IEntity newEntity = _context.CreateEntity();
+    foreach (int index in _entity.GetComponentIndices())
     {
-      ComponentInfo newComponentInfo = new(newEntity, componentInfo.Index,
-        Activator.CreateInstance(componentInfo.Type) as IComponent);
-      foreach (string fieldName in componentInfo.FieldNames)
-        newComponentInfo.SetFieldValue(fieldName, componentInfo.GetFieldValue(fieldName));
+      IComponent component = _entity.GetComponent(index);
+      ComponentInfo componentInfo = new(newEntity, index, component);
+      
+      IComponent newComponent = Activator.CreateInstance(componentInfo.Type) as IComponent;
+      ComponentInfo newComponentInfo = new(newEntity, index, newComponent);
 
-      newEntity.AddComponent(newComponentInfo.Index, newComponentInfo.Component);
+      foreach (string fieldName in componentInfo.FieldNames)
+      {
+        object value = componentInfo.GetFieldValue(fieldName);
+        newComponentInfo.SetFieldValue(fieldName, value);
+      }
+
+      try
+      {
+        newEntity.AddComponent(index, newComponent);
+      }
+      catch (Exception e)
+      {
+        GD.PrintErr(e);
+      }
     }
   }
 
   private void OnComponentAddAction(long i)
   {
     int index = _componentsButton.GetItemId((int)i);
-    IEntity entity = _entityObserverNode.Entity;
-
-    if (!entity.HasComponent(index))
+    if (!_entity.HasComponent(index))
     {
       Type componentType = _contextInfo.componentTypes[index];
-      ComponentInfo componentInfo = new(entity, index, Activator.CreateInstance(componentType) as IComponent);
+      ComponentInfo componentInfo = new(_entity, index, Activator.CreateInstance(componentType) as IComponent);
 
-      entity.AddComponent(componentInfo.Index, componentInfo.Component);
+      _entity.AddComponent(componentInfo.Index, componentInfo.Component);
     }
 
     _componentsButton.Selected = -1;

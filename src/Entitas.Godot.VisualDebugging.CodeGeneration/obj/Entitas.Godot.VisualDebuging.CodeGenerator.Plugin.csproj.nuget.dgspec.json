@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj": {}
+    "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj": {}
   },
   "projects": {
-    "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj": {
+    "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj": {
       "version": "0.1.0",
       "restore": {
-        "projectUniqueName": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
+        "projectUniqueName": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
         "projectName": "Entitas.Godot.VisualDebuging.CodeGenerator.Plugin",
-        "projectPath": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
+        "projectPath": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
         "packagesPath": "/Users/anton_kukhlevskyi/.nuget/packages/",
-        "outputPath": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/",
+        "outputPath": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/anton_kukhlevskyi/.nuget/NuGet/NuGet.Config"

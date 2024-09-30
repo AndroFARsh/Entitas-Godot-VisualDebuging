@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,7 +7,7 @@ using Godot;
 
 namespace Entitas.Godot;
 
-public class DebugSystems : Systems
+public class DebugSystems : Systems, IDisposable
 {
   public static AvgResetInterval AvgResetInterval = AvgResetInterval.Never;
 
@@ -31,7 +32,6 @@ public class DebugSystems : Systems
   public int TearDownSystemsCount => _tearDownSystems.Count;
 
   public string Name => _name;
-  public SystemObserverNode Node => _node;
 
   public SystemInfo SystemInfo => _systemInfo;
   public double ExecuteDuration => _executeDuration;
@@ -42,9 +42,21 @@ public class DebugSystems : Systems
   public readonly List<SystemInfo> CleanupSystemInfos = new();
   public readonly List<SystemInfo> TearDownSystemInfos = new();
   public readonly List<ISystem> AllSystems = new();
+  
+  private readonly List<SystemInfo> _systems = new();
+  public List<SystemInfo> GetSystemInfo(SystemInterfaceFlags flags)
+  {
+    _systems.Clear();
+    
+    if ((flags & SystemInterfaceFlags.InitializeSystem) > 0) _systems.AddRange(InitializeSystemInfos);
+    if ((flags & SystemInterfaceFlags.ExecuteSystem) > 0) _systems.AddRange(ExecuteSystemInfos);
+    if ((flags & SystemInterfaceFlags.CleanupSystem) > 0) _systems.AddRange(CleanupSystemInfos);
+    if ((flags & SystemInterfaceFlags.TearDownSystem) > 0) _systems.AddRange(TearDownSystemInfos);
+
+    return _systems;
+  }
 
   private string _name;
-  private SystemObserverNode _node;
   private SystemInfo _systemInfo;
   private Stopwatch _stopwatch;
   private double _executeDuration;
@@ -59,36 +71,33 @@ public class DebugSystems : Systems
   {
     Initialize(GetType().TypeName());
   }
+  
+  ~DebugSystems() 
+  {
+    GD.PrintErr("~DebugSystems");
+    Dispose();
+  }
 
   protected void Initialize(string name)
   {
     _name = name;
-    _node = new SystemObserverNode();
     _systemInfo = new SystemInfo(this);
     _stopwatch = new Stopwatch();
     
-    _node.Initialize(_systemInfo);
+    EntitasRoot.RegisterSystem(this);
   }
 
   public override Systems Add(ISystem system)
   {
     AllSystems.Add(system);
 
-    SystemInfo childSystemInfo;
-
-    if (system is DebugSystems debugSystems)
-    {
-      childSystemInfo = debugSystems.SystemInfo;
-      debugSystems.Node.Reparent(_node);
-    }
-    else
-    {
-      childSystemInfo = new SystemInfo(system);
-      SystemObserverNode childNode = new();
-      childNode.Initialize(childSystemInfo);
-      childNode.Reparent(_node);
-    }
-
+    SystemInfo childSystemInfo = system is DebugSystems debugSystems
+      ? debugSystems.SystemInfo
+      : new SystemInfo(system);
+    
+    if (system is DebugSystems childDebugSystems)
+      EntitasRoot.UnregisterTopSystem(childDebugSystems);
+    
     childSystemInfo.ParentSystemInfo = _systemInfo;
 
     if (childSystemInfo.IsInitializeSystems) InitializeSystemInfos.Add(childSystemInfo);
@@ -111,6 +120,8 @@ public class DebugSystems : Systems
 
   public override void Initialize()
   {
+    if (!SystemInfo.IsActive) return; 
+    
     for (var i = 0; i < _initializeSystems.Count; i++)
     {
       SystemInfo systemInfo = InitializeSystemInfos[i];
@@ -127,15 +138,13 @@ public class DebugSystems : Systems
 
   public override void Execute()
   {
-    if (_node != null && _node.IsActive != _systemInfo.IsActive) _systemInfo.IsActive = _node.IsActive;
-    if (_node is { IsActive: true })
+    if (SystemInfo.IsActive) 
       StepExecute();
-  }
+  } 
 
   public override void Cleanup()
   {
-    if (_node != null && _node.IsActive != _systemInfo.IsActive) _systemInfo.IsActive = _node.IsActive;
-    if (_node is { IsActive: true })
+    if (!SystemInfo.IsActive)
       StepCleanup();
   }
 
@@ -154,7 +163,7 @@ public class DebugSystems : Systems
         _stopwatch.Start();
         _executeSystems[i].Execute();
         _stopwatch.Stop();
-        var duration = _stopwatch.Elapsed.TotalMilliseconds;
+        double duration = _stopwatch.Elapsed.TotalMilliseconds;
         executeDuration += duration;
         systemInfo.AddExecutionDuration(duration);
       }
@@ -186,6 +195,8 @@ public class DebugSystems : Systems
 
   public override void TearDown()
   {
+    if (!SystemInfo.IsActive) return;
+    
     for (int i = 0; i < _tearDownSystems.Count; i++)
     {
       SystemInfo systemInfo = TearDownSystemInfos[i];
@@ -198,5 +209,22 @@ public class DebugSystems : Systems
         systemInfo.TeardownDuration = _stopwatch.Elapsed.TotalMilliseconds;
       }
     }
+  }
+
+  public void Dispose()
+  {
+    foreach (ISystem system in AllSystems)
+      if (system is DebugSystems childDebugSystem)
+        childDebugSystem.Dispose();
+
+    EntitasRoot.UnregisterSystem(this);
+    
+    DeactivateReactiveSystems();
+    ClearReactiveSystems();
+    
+    _initializeSystems.Clear();
+    _executeSystems.Clear();
+    _cleanupSystems.Clear();
+    _tearDownSystems.Clear();
   }
 }

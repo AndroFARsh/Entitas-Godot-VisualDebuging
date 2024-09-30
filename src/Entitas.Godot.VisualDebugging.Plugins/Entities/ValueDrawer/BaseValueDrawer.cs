@@ -7,7 +7,6 @@ public abstract partial class BaseValueDrawer : MarginContainer
   private string _fieldName;
   private ComponentInfo _componentInfo;
   
-  private ColorRect _bg;
   private Label _title;
   private GridContainer _gridContainer;
 
@@ -17,14 +16,13 @@ public abstract partial class BaseValueDrawer : MarginContainer
 
   public GridContainer GridContainer => _gridContainer;
   
-  public void Initialize(ComponentInfo componentInfo, string fieldName,  bool showBg)
+  public void Initialize(ComponentInfo componentInfo, string fieldName)
   {
     _componentInfo = componentInfo;
     _fieldName = fieldName;
 
     InitializeTree();
-    
-    _bg.Visible = showBg;
+
     _title.Text = fieldName;
     
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -41,12 +39,6 @@ public abstract partial class BaseValueDrawer : MarginContainer
     GrowVertical = GrowDirection.Both;
     SizeFlagsHorizontal = SizeFlags.ExpandFill;
 
-    _bg = new ColorRect();
-    _bg.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-    _bg.SizeFlagsVertical = SizeFlags.ExpandFill;
-    _bg.Color = new Color(1, 1, 1, 0.1f);
-    AddChild(_bg);
-
     MarginContainer marginContainer = new();
     marginContainer.AddThemeConstantOverride("margin_top", Consts.Margin);
     marginContainer.AddThemeConstantOverride("margin_left", Consts.Margin);
@@ -54,7 +46,7 @@ public abstract partial class BaseValueDrawer : MarginContainer
     marginContainer.AddThemeConstantOverride("margin_right", Consts.Margin);
     AddChild(marginContainer);
 
-    HBoxContainer rowContainer = new HBoxContainer();
+    HBoxContainer rowContainer = new();
     rowContainer.AddThemeConstantOverride("separation", Consts.Margin);
     rowContainer.SizeFlagsVertical = SizeFlags.ShrinkBegin;
     marginContainer.AddChild(rowContainer);

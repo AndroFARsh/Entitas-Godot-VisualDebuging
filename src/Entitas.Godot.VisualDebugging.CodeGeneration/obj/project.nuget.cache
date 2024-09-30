@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iVrzQyj1bU3nK5MgyKSxvvFtNaKFTdM275OkY+sFHhV9p9De+J5CnUjXAoDcQZyt9wIK6HeJ7E7ftmnBHiu+1Q==",
+  "dgSpecHash": "rKciaEMB+vICfUQudkY1py07BMdKSh2EsTOtxGD/OuHw9wL7WX0JzsHjP/vOAvzxTzhZtTEuJE74banM2sD//g==",
   "success": true,
-  "projectFilePath": "/Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
+  "projectFilePath": "/Users/anton_kukhlevskyi/Dev/Godot/Entitas-Godot-VisualDebuging/src/Entitas.Godot.VisualDebugging.CodeGeneration/Entitas.Godot.VisualDebuging.CodeGenerator.Plugin.csproj",
   "expectedPackageFiles": [
     "/Users/anton_kukhlevskyi/.nuget/packages/desperatedevs.caching/1.1.0/desperatedevs.caching.1.1.0.nupkg.sha512",
     "/Users/anton_kukhlevskyi/.nuget/packages/desperatedevs.extensions/3.0.0/desperatedevs.extensions.3.0.0.nupkg.sha512",
@@ -35,12 +35,5 @@
     "/Users/anton_kukhlevskyi/.nuget/packages/microsoft.netcore.app.ref/6.0.30/microsoft.netcore.app.ref.6.0.30.nupkg.sha512",
     "/Users/anton_kukhlevskyi/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.30/microsoft.aspnetcore.app.ref.6.0.30.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file /Users/anton_kukhlevskyi/Dev/Godot/entitas.godot.visualdebugging.plugins/src/Entitas.Godot.VisualDebugging.CodeGeneration/obj/project.nuget.cache : Found invalid data while decoding."
-    }
-  ]
+  "logs": []
 }
