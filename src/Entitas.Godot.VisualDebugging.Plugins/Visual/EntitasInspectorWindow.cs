@@ -11,8 +11,8 @@ public partial class EntitasInspectorWindow : Window
 
   private int _prevDebugSystems;
   private readonly List<TreeItem> _removeTreeItem = new ();
-  private readonly Dictionary<DebugSystems, TreeItem> _debugSystemsToTreeItem = new ();
-  private readonly Dictionary<TreeItem, DebugSystems> _treeItemToDebugSystems = new ();
+  private readonly Dictionary<DebugFeature, TreeItem> _debugSystemsToTreeItem = new ();
+  private readonly Dictionary<TreeItem, DebugFeature> _treeItemToDebugSystems = new ();
   
   private readonly Dictionary<TreeItem, IContext> _treeItemToContext = new ();
   private readonly Dictionary<IContext, TreeItem> _contextToTreeItem = new ();
@@ -62,21 +62,21 @@ public partial class EntitasInspectorWindow : Window
 
   private void UpdateSystemTree()
   {
-    if (!EntitasRoot.Global.IsSystemChanged) return;
-    EntitasRoot.Global.IsSystemChanged = false;
+    if (!EntitasRoot.Global.IsFeatureCollectionChanged) return;
+    EntitasRoot.Global.IsFeatureCollectionChanged = false;
     
-    foreach (DebugSystems systems in _entitasRoot.TopSystems)
+    foreach (DebugFeature systems in _entitasRoot.TopFeatures)
       if (systems.SystemInfo.ParentSystemInfo == null)
         InitializeSystem(_systemsRoot, systems);
     
     _removeTreeItem.Clear();
-    foreach ((DebugSystems system, TreeItem treeItem) in _debugSystemsToTreeItem)
-      if (!_entitasRoot.AllSystems.Contains(system))
+    foreach ((DebugFeature system, TreeItem treeItem) in _debugSystemsToTreeItem)
+      if (!_entitasRoot.AllFeatures.Contains(system))
         _removeTreeItem.Add(treeItem);
    
     foreach (TreeItem treeItem in _removeTreeItem)
     {
-      if (_treeItemToDebugSystems.Remove(treeItem, out DebugSystems system))
+      if (_treeItemToDebugSystems.Remove(treeItem, out DebugFeature system))
       {
         _debugSystemsToTreeItem.Remove(system);
         treeItem.GetParent().RemoveChild(treeItem);
@@ -130,19 +130,19 @@ public partial class EntitasInspectorWindow : Window
     panelContainer.AddChild(_inspectorContainer);
   }
   
-  private void InitializeSystem(TreeItem parent, DebugSystems systems)
+  private void InitializeSystem(TreeItem parent, DebugFeature feature)
   {
-    if (!_debugSystemsToTreeItem.TryGetValue(systems, out TreeItem systemItem))
+    if (!_debugSystemsToTreeItem.TryGetValue(feature, out TreeItem systemItem))
     {
       systemItem = _tree.CreateItem(parent);
-      systemItem.SetText(0, systems.Name);
+      systemItem.SetText(0, feature.Name);
 
-      _debugSystemsToTreeItem.Add(systems, systemItem);
-      _treeItemToDebugSystems.Add(systemItem, systems);
+      _debugSystemsToTreeItem.Add(feature, systemItem);
+      _treeItemToDebugSystems.Add(systemItem, feature);
     }
 
-    foreach (ISystem childSystem in systems.AllSystems)
-      if (childSystem is DebugSystems childDebugSystems)
+    foreach (ISystem childSystem in feature.AllSystems)
+      if (childSystem is DebugFeature childDebugSystems)
         InitializeSystem(systemItem, childDebugSystems);
   }
 
@@ -179,7 +179,7 @@ public partial class EntitasInspectorWindow : Window
 
     _prevSelected = _tree.GetSelected();
     
-    if (_treeItemToDebugSystems.TryGetValue(_tree.GetSelected(), out DebugSystems debugSystems))
+    if (_treeItemToDebugSystems.TryGetValue(_tree.GetSelected(), out DebugFeature debugSystems))
     {
       _systemInspector.Initialize(debugSystems);
       _inspectorContainer.AddChild(_systemInspector);

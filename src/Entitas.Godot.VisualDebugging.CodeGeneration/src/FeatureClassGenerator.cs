@@ -11,7 +11,7 @@ namespace Entitas.Godot
         const string FEATURE_TEMPLATE =
             @"#if (!ENTITAS_DISABLE_VISUAL_DEBUGGING && GODOT && DEBUG)
 
-public class Feature : Entitas.Godot.DebugSystems {
+public class Feature : Entitas.Godot.DebugFeature {
 
     public Feature(string name) : base(name) {
     }

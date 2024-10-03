@@ -7,24 +7,24 @@ using Godot;
 
 namespace Entitas.Godot;
 
-public class DebugSystems : Systems, IDisposable
+public class DebugFeature : Systems, IDisposable
 {
   public static AvgResetInterval AvgResetInterval = AvgResetInterval.Never;
 
   public int TotalInitializeSystemsCount => _initializeSystems.Sum(system =>
-    system is DebugSystems debugSystems ? debugSystems.TotalInitializeSystemsCount : 1);
+    system is DebugFeature debugSystems ? debugSystems.TotalInitializeSystemsCount : 1);
 
   public int TotalExecuteSystemsCount => _executeSystems.Sum(system =>
-    system is DebugSystems debugSystems ? debugSystems.TotalExecuteSystemsCount : 1);
+    system is DebugFeature debugSystems ? debugSystems.TotalExecuteSystemsCount : 1);
 
   public int TotalCleanupSystemsCount => _cleanupSystems.Sum(system =>
-    system is DebugSystems debugSystems ? debugSystems.TotalCleanupSystemsCount : 1);
+    system is DebugFeature debugSystems ? debugSystems.TotalCleanupSystemsCount : 1);
 
   public int TotalTearDownSystemsCount => _tearDownSystems.Sum(system =>
-    system is DebugSystems debugSystems ? debugSystems.TotalTearDownSystemsCount : 1);
+    system is DebugFeature debugSystems ? debugSystems.TotalTearDownSystemsCount : 1);
 
   public int TotalSystemsCount =>
-    AllSystems.Sum(system => system is DebugSystems debugSystems ? debugSystems.TotalSystemsCount : 1);
+    AllSystems.Sum(system => system is DebugFeature debugSystems ? debugSystems.TotalSystemsCount : 1);
 
   public int InitializeSystemsCount => _initializeSystems.Count;
   public int ExecuteSystemsCount => _executeSystems.Count;
@@ -41,6 +41,7 @@ public class DebugSystems : Systems, IDisposable
   public readonly List<SystemInfo> ExecuteSystemInfos = new();
   public readonly List<SystemInfo> CleanupSystemInfos = new();
   public readonly List<SystemInfo> TearDownSystemInfos = new();
+  public readonly List<SystemInfo> DebugSystemInfos = new();
   public readonly List<ISystem> AllSystems = new();
   
   private readonly List<SystemInfo> _systems = new();
@@ -52,6 +53,7 @@ public class DebugSystems : Systems, IDisposable
     if ((flags & SystemInterfaceFlags.ExecuteSystem) > 0) _systems.AddRange(ExecuteSystemInfos);
     if ((flags & SystemInterfaceFlags.CleanupSystem) > 0) _systems.AddRange(CleanupSystemInfos);
     if ((flags & SystemInterfaceFlags.TearDownSystem) > 0) _systems.AddRange(TearDownSystemInfos);
+    if ((flags & SystemInterfaceFlags.DebugSystem) > 0) _systems.AddRange(DebugSystemInfos);
 
     return _systems;
   }
@@ -62,19 +64,18 @@ public class DebugSystems : Systems, IDisposable
   private double _executeDuration;
   private double _cleanupDuration;
 
-  public DebugSystems(string name)
+  public DebugFeature(string name)
   {
     Initialize(name);
   }
 
-  protected DebugSystems()
+  protected DebugFeature()
   {
     Initialize(GetType().TypeName());
   }
   
-  ~DebugSystems() 
+  ~DebugFeature() 
   {
-    GD.PrintErr("~DebugSystems");
     Dispose();
   }
 
@@ -84,19 +85,20 @@ public class DebugSystems : Systems, IDisposable
     _systemInfo = new SystemInfo(this);
     _stopwatch = new Stopwatch();
     
-    EntitasRoot.RegisterSystem(this);
+    EntitasRoot.RegisterFeature(this);
   }
 
   public override Systems Add(ISystem system)
   {
     AllSystems.Add(system);
 
-    SystemInfo childSystemInfo = system is DebugSystems debugSystems
+    SystemInfo childSystemInfo = system is DebugFeature debugSystems
       ? debugSystems.SystemInfo
       : new SystemInfo(system);
     
-    if (system is DebugSystems childDebugSystems)
-      EntitasRoot.UnregisterTopSystem(childDebugSystems);
+    EntitasRoot.RegisterSystem(childSystemInfo);
+    if (system is DebugFeature childDebugSystems)
+      EntitasRoot.UnregisterTopFeature(childDebugSystems);
     
     childSystemInfo.ParentSystemInfo = _systemInfo;
 
@@ -104,6 +106,7 @@ public class DebugSystems : Systems, IDisposable
     if (childSystemInfo.IsExecuteSystems || childSystemInfo.IsReactiveSystems) ExecuteSystemInfos.Add(childSystemInfo);
     if (childSystemInfo.IsCleanupSystems) CleanupSystemInfos.Add(childSystemInfo);
     if (childSystemInfo.IsTearDownSystems) TearDownSystemInfos.Add(childSystemInfo);
+    if (childSystemInfo.IsDebugSystems) DebugSystemInfos.Add(childSystemInfo);
 
     return base.Add(system);
   }
@@ -114,7 +117,7 @@ public class DebugSystems : Systems, IDisposable
       systemInfo.ResetDurations();
 
     foreach (var system in AllSystems)
-      if (system is DebugSystems debugSystems)
+      if (system is DebugFeature debugSystems)
         debugSystems.ResetDurations();
   }
 
@@ -144,7 +147,7 @@ public class DebugSystems : Systems, IDisposable
 
   public override void Cleanup()
   {
-    if (!SystemInfo.IsActive)
+    if (SystemInfo.IsActive)
       StepCleanup();
   }
 
@@ -214,10 +217,13 @@ public class DebugSystems : Systems, IDisposable
   public void Dispose()
   {
     foreach (ISystem system in AllSystems)
-      if (system is DebugSystems childDebugSystem)
+      if (system is DebugFeature childDebugSystem)
         childDebugSystem.Dispose();
 
-    EntitasRoot.UnregisterSystem(this);
+    foreach (SystemInfo systemInfo in _systems)
+      EntitasRoot.UnregisterSystem(systemInfo);
+    
+    EntitasRoot.UnregisterFeature(this);
     
     DeactivateReactiveSystems();
     ClearReactiveSystems();

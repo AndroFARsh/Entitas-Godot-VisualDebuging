@@ -10,5 +10,6 @@ public enum SystemInterfaceFlags
   ExecuteSystem = 1 << 2,
   CleanupSystem = 1 << 3,
   TearDownSystem = 1 << 4,
-  ReactiveSystem = 1 << 5
+  ReactiveSystem = 1 << 5,
+  DebugSystem = 1 << 6
 }

@@ -16,6 +16,10 @@ public class SystemInfo
   public bool IsTearDownSystems =>
     (_interfaceFlags & SystemInterfaceFlags.TearDownSystem) == SystemInterfaceFlags.TearDownSystem;
 
+  public bool IsDebugSystems =>
+    (_interfaceFlags & SystemInterfaceFlags.DebugSystem) == SystemInterfaceFlags.DebugSystem;
+
+  
   public bool IsReactiveSystems =>
     (_interfaceFlags & SystemInterfaceFlags.ReactiveSystem) == SystemInterfaceFlags.ReactiveSystem;
 
@@ -64,11 +68,11 @@ public class SystemInfo
     System = system;
     _interfaceFlags = GetInterfaceFlags(system);
 
-    SystemName = system is DebugSystems debugSystem && debugSystem.Name.Length > 0
+    SystemName = system is DebugFeature debugSystem && debugSystem.Name.Length > 0
       ? debugSystem.Name
       : system.GetType().TypeName() ?? nameof(system);
     
-    IsActive = true;
+    IsActive = (system as IDebugSystem)?.IsActive ?? true;
   }
 
   public void AddExecutionDuration(double executionDuration)
@@ -115,6 +119,8 @@ public class SystemInfo
     if (system is ICleanupSystem) flags |= SystemInterfaceFlags.CleanupSystem;
     if (system is ITearDownSystem) flags |= SystemInterfaceFlags.TearDownSystem;
 
+    if (system is IDebugSystem) flags |= SystemInterfaceFlags.DebugSystem;
+    
     return flags;
   }
 }
