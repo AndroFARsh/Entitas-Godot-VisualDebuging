@@ -7,7 +7,8 @@ namespace Entitas.Godot;
 [GlobalClass]
 public partial class EntitasRoot : CanvasLayer
 {
-  private const int MenuInspectorId = 122412;
+  private const int MenuInspectorId = 1234000;
+  private const int MenuDebugSystemsId = MenuInspectorId + 1;
 
   private static EntitasRoot _global;
 
@@ -17,19 +18,22 @@ public partial class EntitasRoot : CanvasLayer
   private readonly Dictionary<IContext, HashSet<IGroup>> _contextToGroup = new();
   private readonly Dictionary<IEntity, IContext> _entityToContext = new();
   
+  private readonly Dictionary<long, SystemInfo> _allDebugFeatures = new();
   private readonly HashSet<IContext> _contexts = new();
-  private readonly HashSet<DebugSystems> _allSystems = new();
-  private readonly HashSet<DebugSystems> _topSystems = new();
+  private readonly HashSet<DebugFeature> _allFeatures = new();
+  
+  private readonly HashSet<DebugFeature> _topFeatures = new();
   private readonly NodePool _pool = new();
   
   private Window _window;
   private MenuButton _debugMenuButton;
+  private PopupMenu _debugSystemPopup;
 
-  public bool IsSystemChanged { get; set; }
+  public bool IsFeatureCollectionChanged { get; set; }
   
   public HashSet<IContext> Contexts => _contexts;
-  public HashSet<DebugSystems> TopSystems => _topSystems;
-  public HashSet<DebugSystems> AllSystems => _allSystems;
+  public HashSet<DebugFeature> TopFeatures => _topFeatures;
+  public HashSet<DebugFeature> AllFeatures => _allFeatures;
   public NodePool Pool => _pool;
 
   public event Action<IContext, IEntity> OnEntityCreated;
@@ -46,25 +50,51 @@ public partial class EntitasRoot : CanvasLayer
 
     global._contexts.Add(context);
   }
-  
-  public static void RegisterSystem(DebugSystems systems)
+
+  public static void Pause()
   {
-    Global._allSystems.Add(systems);
-    Global._topSystems.Add(systems);
-    Global.IsSystemChanged = true;
+    foreach (DebugFeature feature in Global._topFeatures)
+      feature.SystemInfo.IsActive = false;
   }
 
-  public static void UnregisterTopSystem(DebugSystems systems)
+  public static void Resume()
   {
-    Global._topSystems.Remove(systems);
-    Global.IsSystemChanged = true;
+    foreach (DebugFeature feature in Global._topFeatures)
+      feature.SystemInfo.IsActive = true;
+  }
+
+  public static void RegisterFeature(DebugFeature feature)
+  {
+    Global._allFeatures.Add(feature);
+    Global._topFeatures.Add(feature);
+    RegisterSystem(feature.SystemInfo);
+    Global.IsFeatureCollectionChanged = true;
   }
   
-  public static void UnregisterSystem(DebugSystems systems)
+  public static void RegisterSystem(SystemInfo systemInfo)
   {
-    Global._allSystems.Remove(systems);
-    Global._topSystems.Remove(systems);
-    Global.IsSystemChanged = true;
+    if (systemInfo.IsDebugSystems)
+      Global.RefreshDebugSystemMenu(systemInfo, true);  
+  }
+
+  public static void UnregisterTopFeature(DebugFeature feature)
+  {
+    Global._topFeatures.Remove(feature);
+    Global.IsFeatureCollectionChanged = true;
+  }
+
+  public static void UnregisterSystem(SystemInfo systemInfo)
+  {
+    if (systemInfo.IsDebugSystems)
+      Global.RefreshDebugSystemMenu(systemInfo, false);
+  }
+
+  public static void UnregisterFeature(DebugFeature feature)
+  {
+    Global._allFeatures.Remove(feature);
+    Global._topFeatures.Remove(feature);
+    UnregisterSystem(feature.SystemInfo);
+    Global.IsFeatureCollectionChanged = true;
   }
 
   public IContext GetContext(IEntity entity) => _entityToContext.GetValueOrDefault(entity);
@@ -125,6 +155,8 @@ public partial class EntitasRoot : CanvasLayer
     root.AddChild(newInstance);
     return newInstance;
   }
+  
+  
 
   public override void _EnterTree()
   {
@@ -144,19 +176,19 @@ public partial class EntitasRoot : CanvasLayer
     _window.QueueFree();
     _window = null;
   }
-
+  
   public override void _Notification(int what)
   {
     if (what == NotificationPredelete)
     {
       if (_global == this)
       {
-        foreach (DebugSystems system in _allSystems)
+        foreach (DebugFeature system in _allFeatures)
           system.Dispose();
         
         _pool.Dispose();
-        _allSystems.Clear();
-        _topSystems.Clear();
+        _allFeatures.Clear();
+        _topFeatures.Clear();
         _window?.QueueFree();
         _debugMenuButton?.QueueFree();
         _window = null;
@@ -176,15 +208,51 @@ public partial class EntitasRoot : CanvasLayer
     AddChild(menuBar);
     _debugMenuButton = new MenuButton();
     _debugMenuButton.Text = "Debug Tools";
+    _debugMenuButton.GetPopup().PreferNativeMenu = false;
+    _debugMenuButton.GetPopup().SubmenuPopupDelay = 3;
     _debugMenuButton.GetPopup().AddItem("Entitas Inspector", MenuInspectorId);
+    
+    _debugSystemPopup = new PopupMenu();
+    _debugSystemPopup.AllowSearch = true;
+    _debugSystemPopup.PreferNativeMenu = false;
+    _debugMenuButton.GetPopup().AddSubmenuNodeItem("Debug Systems", _debugSystemPopup, MenuDebugSystemsId);
+    
+    _debugSystemPopup.IdPressed += OnDebugSystemItemPressed;
+
     _debugMenuButton.GetPopup().IdPressed += OnMenuItemPressed;
+    
     menuBar.AddChild(_debugMenuButton);
     Name = "[Entitas]";
   }
 
+  private void OnDebugSystemItemPressed(long id)
+  {
+    if (_allDebugFeatures.TryGetValue(id, out SystemInfo systemInfo))
+    {
+      int index = _debugSystemPopup.GetItemIndex((int)id);
+      systemInfo.IsActive = !systemInfo.IsActive;
+      _debugSystemPopup.SetItemChecked(index, systemInfo.IsActive);
+    }
+  }
+
+  private void RefreshDebugSystemMenu(SystemInfo systemInfo, bool created)
+  {
+    int id = systemInfo.GetHashCode();
+    if (created)
+    {
+      _allDebugFeatures.Add(id, systemInfo);
+      _debugSystemPopup.AddCheckItem(systemInfo.SystemName, id);
+      _debugSystemPopup.SetItemChecked(_debugSystemPopup.GetItemIndex(id), systemInfo.IsActive); 
+    }
+    else
+    {
+      _allDebugFeatures.Remove(id);
+      _debugSystemPopup.RemoveItem(_debugSystemPopup.GetItemIndex(id));
+    }
+  }
+
   private void OnMenuItemPressed(long id)
   {
-    _debugMenuButton.GetPopup().PreferNativeMenu = true;
     if (id == MenuInspectorId && _window == null)
     {
       GetViewport().SetEmbeddingSubwindows(false);

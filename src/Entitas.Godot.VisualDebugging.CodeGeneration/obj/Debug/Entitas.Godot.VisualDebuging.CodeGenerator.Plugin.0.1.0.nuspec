@@ -6,7 +6,7 @@
     <authors>Anton Kukhlevskyi</authors>
     <icon>icon.png</icon>
     <description>Library that generate helper classes for visual debuging</description>
-    <repository type="git" commit="c0ba8fcccea4d94db4258272542d4307644c1b12" />
+    <repository type="git" commit="b1f2bb35146a95d78f231aba6e46a1fd353cffc7" />
     <dependencies>
       <group targetFramework="net6.0">
         <dependency id="DesperateDevs.Serialization" version="2.0.2" exclude="Build,Analyzers" />

@@ -110,7 +110,7 @@ public partial class SystemInspector : BaseInspector
   private const string StepIcon = "\u23ef";
   
   private SystemInfo _systemInfo;
-  private DebugSystems _systems;
+  private DebugFeature _feature;
   
   // Details
   private CheckButton _detailsCheckButton;
@@ -160,11 +160,11 @@ public partial class SystemInspector : BaseInspector
   private Dictionary<SystemInterfaceFlags, SystemsData> _systemDatas = new();
   private List<SystemPerformance> _systemPerformances = new();
   
-  public void Initialize(DebugSystems systems)
+  public void Initialize(DebugFeature feature)
   {
-    if (_systems == systems) return;
-    _systems = systems;
-    _systemInfo = systems.SystemInfo;
+    if (_feature == feature) return;
+    _feature = feature;
+    _systemInfo = feature.SystemInfo;
 
     InitializeTree();
 
@@ -195,27 +195,27 @@ public partial class SystemInspector : BaseInspector
     _systemsCheckButton.ButtonPressed = _prevSystemsVisibility;
     _systemsContent.Visible = _prevSystemsVisibility;
 
-    _resetOptionMode.Selected = DebugSystems.AvgResetInterval.IndexOf();
+    _resetOptionMode.Selected = DebugFeature.AvgResetInterval.IndexOf();
     _resetOptionMode.ItemSelected += OnResetItemOptionSelected;
     _resetAverageNowButton.Pressed += OnResetNowButtonPressed;
 
     _systemFilterTextEdit.TextChanged += OnSystemFilterTextChanged;
     _systemFilterClearButton.Pressed += OnSystemFilterClearClicked;
 
-    FillSystem(_systems);
+    FillSystem(_feature);
   }
 
-  private void FillSystem(DebugSystems systems)
+  private void FillSystem(DebugFeature feature)
   {
-    FillSystem("", SystemInterfaceFlags.InitializeSystem, systems);
-    FillSystem("", SystemInterfaceFlags.ExecuteSystem, systems);
-    FillSystem("", SystemInterfaceFlags.CleanupSystem, systems);
-    FillSystem("", SystemInterfaceFlags.TearDownSystem, systems);
+    FillSystem("", SystemInterfaceFlags.InitializeSystem, feature);
+    FillSystem("", SystemInterfaceFlags.ExecuteSystem, feature);
+    FillSystem("", SystemInterfaceFlags.CleanupSystem, feature);
+    FillSystem("", SystemInterfaceFlags.TearDownSystem, feature);
   }
 
-  private void FillSystem(string offset, SystemInterfaceFlags interfaceFlags, DebugSystems systems)
+  private void FillSystem(string offset, SystemInterfaceFlags interfaceFlags, DebugFeature feature)
   {
-    foreach (SystemInfo systemInfo in systems.GetSystemInfo(interfaceFlags))
+    foreach (SystemInfo systemInfo in feature.GetSystemInfo(interfaceFlags))
     {
       SystemsData data = _systemDatas[interfaceFlags];
       
@@ -249,7 +249,7 @@ public partial class SystemInspector : BaseInspector
           null
         ));
       
-      if (systemInfo.System is DebugSystems childSystem)
+      if (systemInfo.System is DebugFeature childSystem)
         FillSystem(offset + "    ", interfaceFlags, childSystem);
     }
   }
@@ -305,44 +305,44 @@ public partial class SystemInspector : BaseInspector
   private void UpdateDetails()
   {
     // init
-    if (_prevInitializeSystemCount != _systems.TotalInitializeSystemsCount)
+    if (_prevInitializeSystemCount != _feature.TotalInitializeSystemsCount)
     {
-      _prevInitializeSystemCount = _systems.TotalInitializeSystemsCount;
+      _prevInitializeSystemCount = _feature.TotalInitializeSystemsCount;
       _initializeSystemCount.Text = _prevInitializeSystemCount.ToString();  
     }
 
     // exec
-    if (_prevExecuteSystemCount != _systems.TotalExecuteSystemsCount)
+    if (_prevExecuteSystemCount != _feature.TotalExecuteSystemsCount)
     {
-      _prevExecuteSystemCount = _systems.TotalExecuteSystemsCount;
+      _prevExecuteSystemCount = _feature.TotalExecuteSystemsCount;
       _executeSystemCount.Text = _prevExecuteSystemCount.ToString();  
     }
     
     // cleanup
-    if (_prevCleanupSystemCount != _systems.TotalCleanupSystemsCount)
+    if (_prevCleanupSystemCount != _feature.TotalCleanupSystemsCount)
     {
-      _prevCleanupSystemCount = _systems.TotalCleanupSystemsCount;
+      _prevCleanupSystemCount = _feature.TotalCleanupSystemsCount;
       _cleanupSystemCount.Text = _prevCleanupSystemCount.ToString();  
     }
     
     // tearDown
-    if (_prevTearDownSystemCount != _systems.TotalTearDownSystemsCount)
+    if (_prevTearDownSystemCount != _feature.TotalTearDownSystemsCount)
     {
-      _prevTearDownSystemCount = _systems.TotalTearDownSystemsCount;
+      _prevTearDownSystemCount = _feature.TotalTearDownSystemsCount;
       _tearDownSystemCount.Text = _prevTearDownSystemCount.ToString();  
     }
     
     // total
-    if (_prevTotalSystemCount != _systems.TotalSystemsCount)
+    if (_prevTotalSystemCount != _feature.TotalSystemsCount)
     {
-      _prevTotalSystemCount = _systems.TotalSystemsCount;
+      _prevTotalSystemCount = _feature.TotalSystemsCount;
       _totalSystemCount.Text = _prevTotalSystemCount.ToString();  
     }
   }
 
   public override void CleanUp()
   {
-    if (_systems == null) return;
+    if (_feature == null) return;
 
     _detailsCheckButton.Pressed -= OnDetailsVisibilityChanged;
     
@@ -373,7 +373,7 @@ public partial class SystemInspector : BaseInspector
     _systemPerformances.Clear();
     
     _systemInfo = null;
-    _systems = null;
+    _feature = null;
   }
 
   private void InitializeTree()
@@ -556,8 +556,8 @@ public partial class SystemInspector : BaseInspector
 
   private void OnStepButtonClicked()
   {
-    _systems.StepExecute();
-    _systems.StepCleanup();
+    _feature.StepExecute();
+    _feature.StepCleanup();
   }
 
   private void OnPauseButtonClicked()
@@ -687,9 +687,9 @@ public partial class SystemInspector : BaseInspector
   }
   
   private void OnResetItemOptionSelected(long index) =>
-    DebugSystems.AvgResetInterval = EnumExtensions.FromIndex<AvgResetInterval>((int)index);
+    DebugFeature.AvgResetInterval = EnumExtensions.FromIndex<AvgResetInterval>((int)index);
 
-  private void OnResetNowButtonPressed() => _systems.ResetDurations();
+  private void OnResetNowButtonPressed() => _feature.ResetDurations();
   
   private void OnSystemFilterClearClicked()
   {
